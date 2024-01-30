@@ -3,6 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package ca1studentstatus;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -84,25 +90,22 @@ public class MainMenu {
     public static void main(String[] args) {
         displayMenu();
         int option = getUserSelection();
+        performSelectedAction(option);
         
-        if(option == 1){
-            
-        }
-        
-        if(option == 2){
-            
-        }
-        
-        if(option == 3){
-            
-        }
-        
-        //Option 4 exit program
-        if(option == 4){
-            System.exit(0);
-        }
     }
     
+        private static void displayInvalidOptionMessage(){
+        System.out.println("Invalid input. Please enter a number from 1-4");
+        displayMenu();
+    }
+    
+    private static void displayMenu(){
+        System.out.println("Select an option");
+        System.out.println("1. Read and validate data from students.txt file");
+        System.out.println("2. Manually enter student data");
+        System.out.println("3. Display validated student status list");
+        System.out.println("4. Exit");
+    }
     
     private static int getUserSelection(){
         int optionSelected = 0;
@@ -133,17 +136,119 @@ public class MainMenu {
         
     }
     
-    private static void displayInvalidOptionMessage(){
-        System.out.println("Invalid input. Please enter a number from 1-4");
-        displayMenu();
+    private static void performSelectedAction(int option){
+         if(option == 1){
+            ArrayList<Student> students = getValidStudentsFromFile();
+            writeToStudentStatusFile((students));
+            for(Student s: students){
+                s.printStudentStatus();
+            }
+        }
+        
+        if(option == 2){
+            
+        }
+        
+        if(option == 3){
+            
+        }
+        
+        //Option 4 exit program
+        if(option == 4){
+            System.exit(0);
+        }
     }
     
-    private static void displayMenu(){
-        System.out.println("Select an option");
-        System.out.println("1. Read and validate data from students.txt file");
-        System.out.println("2. Manually enter student data");
-        System.out.println("3. Display validated student status list");
-        System.out.println("4. Exit");
+    private static ArrayList<Student> getValidStudentsFromFile(){
+        //Array list of arrays of student data read from file
+        ArrayList<String[]>unValidatedStudentDetails = new ArrayList<>();
+        
+        //Array list to store validated students
+        ArrayList<Student>validatedStudents = new ArrayList<>();
+       
+        //Array list to store each line in file
+        ArrayList<String> data = new ArrayList<>();
+        
+        //Read data from students.txt
+        BufferedReader reader;
+
+		try {
+			reader = new BufferedReader(new FileReader("students.txt"));
+                        
+                        //Begin reading from file
+                        
+                        String line = reader.readLine();
+			while (line != null) {
+                                data.add(line);
+				line = reader.readLine();
+			}
+                        //close the reader    
+			reader.close();
+		} catch (IOException e) {
+                    //Print any IO errors to console
+                    System.out.println(e.toString());
+		}
+                
+                //
+                int index = 1;
+                String line1= "";
+                String line2 = "";
+                String line3 = "";
+                for(String s: data){
+                    
+                    if(index == 1)
+                        line1 = s;
+                    if(index == 2)
+                        line2 = s;
+                    if(index == 3){
+                        line3 = s;
+                        String[] nextStudent = new String[]{line1,line2,line3};
+                        unValidatedStudentDetails.add(nextStudent);
+                    }
+                   
+                     if(index == 3)
+                         index = 0;
+                     index ++;
+                }
+                
+                //Loop through each array of student details
+                for(String[] studentdetails : unValidatedStudentDetails){
+                    System.out.println(studentdetails[0]);
+                    System.out.println(studentdetails[1]);
+                    System.out.println(studentdetails[2]);
+                    //Create student validation object for each array
+                    StudentDataValidation studentData = new StudentDataValidation(studentdetails);
+                    
+                    //Add validated students to arraylist
+                    if(studentData.dataIsValid()){
+                        Student validatedStudent = studentData.createStudent();
+                        validatedStudents.add(validatedStudent);
+                    }
+                
+                }
+                
+                return validatedStudents;
     }
+    
+    private static void writeToStudentStatusFile(ArrayList<Student> students){
+        File statusFile = new File("status.txt");
+        FileWriter statusFileWriter = null;
+        
+        try{
+            statusFileWriter = new FileWriter(statusFile);
+            System.out.println(statusFile.getAbsolutePath());
+            for(Student student : students){
+                statusFileWriter.append(student.getStudentStatus());
+            }
+            System.out.println(students.size());
+        }catch(IOException ex){
+            System.out.println(ex.toString());
+        }
+		
+    }
+    
+   
+    
+
     
 }

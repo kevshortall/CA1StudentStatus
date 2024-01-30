@@ -33,7 +33,7 @@ public class StudentDataValidation {
         //Initialise attributes
         firstName = "";
         surname = "";
-        studentNumber = "";
+        studentNumber = "Test";
         numberClasses = 0;
         
     }
@@ -47,17 +47,15 @@ public class StudentDataValidation {
         
     }
     
-    
     public boolean dataIsValid(){
         
-        if( validateStudentName(line1) &&
-            validateNumberOfClasses(line2) &&
-            validateStudentNumber(line3)){
-           return true;
+        if( !validateStudentName(line1) ||
+            !validateNumberOfClasses(line2) ||
+            !validateStudentNumber(line3)){
+           return false;
         }
-        return false;
+        return true;
     }
-    
     
     public boolean validateStudentName(String fullNameEntered){
       /*First name must be letters only; 
@@ -212,7 +210,14 @@ public class StudentDataValidation {
             }
         }
         
-        return true;
+        //No errors found, set the student number 
+        if(isValid){
+            studentNumber = studentNumberEntered;
+            return true;
+        }else{//error found, print error message
+            System.out.println(errorMessage);
+            return false;
+        }
     }
     
 }

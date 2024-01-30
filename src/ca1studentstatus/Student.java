@@ -15,25 +15,30 @@ public class Student {
     private String studentNumber;
     private int numberClasses;
     private String workload;
-    
-    
-    public Student(){
-        
-    }
 
+    public Student(String firstName, String surname, String studentNumber, int numberClasses) {
+       
+       setFirstName(firstName);
+       setSurname(surname);
+       setFullName();
+       setStudentNumber(studentNumber);
+       setNumberClasses(numberClasses);
+       setWorkload();
+    }
+    
     public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    private void setFullName() {
+        this.fullName = this.firstName + " " + this.surname;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    private void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -41,7 +46,7 @@ public class Student {
         return surname;
     }
 
-    public void setSurname(String surname) {
+    private void setSurname(String surname) {
         this.surname = surname;
     }
 
@@ -49,7 +54,7 @@ public class Student {
         return studentNumber;
     }
 
-    public void setStudentNumber(String studentNumber) {
+    private void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
     }
 
@@ -57,7 +62,7 @@ public class Student {
         return numberClasses;
     }
 
-    public void setNumberClasses(int numberClasses) {
+    private void setNumberClasses(int numberClasses) {
         this.numberClasses = numberClasses;
     }
 
@@ -65,7 +70,32 @@ public class Student {
         return workload;
     }
 
-    public void setWorkload(String workload) {
-        this.workload = workload;
+    private void setWorkload() {
+
+       if(numberClasses == 1)
+           workload = "Very Light";
+       else if(numberClasses == 2)
+            workload = "Light";
+       else if(numberClasses < 6)
+            workload = "Part Time";
+       else 
+            workload = "Full Time";
+     
+    }
+    
+    public String getStudentStatus(){
+       
+        //Format required for outputting to status.txt file
+        String status = studentNumber + " - " +  surname + "\n" + workload + "\n\n";
+        
+        return status;
+        
+    }
+    
+    public void printStudentStatus(){
+        //<Student number> - <Second Name>   Format required
+        //<Workload>
+        System.out.println(studentNumber + " - " + surname);
+        System.out.println(workload);
     }
 }
