@@ -33,11 +33,16 @@ public class StudentDataValidation {
         //Initialise attributes
         firstName = "";
         surname = "";
-        studentNumber = "";
         numberClasses = 0;
+        studentNumber = "";
         
+        //Initialise error message
         String fullName = line1;
-        errorMessage = "Invalid Data for student: " + fullName + " \n";
+        String numClasses = line2;
+        String studentNum = line3;
+        errorMessage = "Invalid Data for Student: " + fullName + 
+                       " >>> Classes: " + numClasses +
+                       " >>> Student #: " + studentNum + "\n";
         
     }
     
@@ -50,13 +55,24 @@ public class StudentDataValidation {
     }
     
     public boolean dataIsValid(){
-        
-        if( !validateStudentName(line1) ||
-            !validateNumberOfClasses(line2) ||
-            !validateStudentNumber(line3)){
-           return false;
+        //Call each validation method to populate error messages
+        boolean validName  = validateStudentName(line1);
+        boolean validNumClasses = validateNumberOfClasses(line2);
+        boolean validStudentNumber = validateStudentNumber(line3);
+             
+        if(!validName ||
+           !validNumClasses ||
+           !validStudentNumber ){
+            //Print any error messages
+            printErrorMessages();
+            return false;
         }
+        //No errors found
         return true;
+    }
+    
+    private void printErrorMessages(){
+        System.out.println(errorMessage + "\n");
     }
     
     public boolean validateStudentName(String fullNameEntered){
@@ -75,8 +91,9 @@ public class StudentDataValidation {
                 }
           }
         
-        if(countSpaces != 1){
-            errorMessage += "Exactly one space required between first name and surname.\n";
+        //Check for all possible whitespace errors
+        if(countSpaces != 1 || fullNameEntered.startsWith(" ") || fullNameEntered.endsWith(" ")) {
+            errorMessage = errorMessage + "-Exactly one space allowed, between first name and surname.\n";
             return false;
         }
        
@@ -85,7 +102,7 @@ public class StudentDataValidation {
             if(!Character.isWhitespace(c)){
                 
                 if( !Character.isLetter(c)){
-                    errorMessage += "First name can only contain letters(Aa-Zz).\n";
+                    errorMessage = errorMessage + "-First name can only contain letters(Aa-Zz).\n";
                     isValid = false;
                 }else{
                     firstName = firstName + c;
@@ -96,13 +113,13 @@ public class StudentDataValidation {
             }
         }
        
-        //Get the surname
-        surname = fullNameEntered.substring(firstName.length() +1);
+        //Get the surname (trim whitespace as this has been dealt with previously)
+        surname = fullNameEntered.substring(firstName.length() +1).trim();
        
-        //Verify surname cotains only letters and numbers
+        //Verify surname contains only letters and numbers
         for(char c: surname.toCharArray()){
            if(!Character.isLetterOrDigit(c)){
-               errorMessage += "Surname can only contain letters and numbers(Aa-Zz,0-9).\n";
+               errorMessage = errorMessage + "-Surname can only contain letters and numbers(Aa-Zz,0-9).\n";
                isValid = false;
            }
         }
@@ -115,13 +132,15 @@ public class StudentDataValidation {
             numberClasses = Integer.parseInt(numberEntered);
             
         }catch(NumberFormatException ex){
-            errorMessage += "Invalid number of classes entered on line 2. \n ";
+            errorMessage = errorMessage + "-Invalid number of classes entered, must be between 1 and 8. \n";
             return false;
         }
+        //Valid number
         if(numberClasses > 0 && numberClasses < 9){
              return true;
         }
-           
+        
+        errorMessage = errorMessage + "-Invalid number of classes entered, must be between 1 and 8. \n";
         return false;
     }
     
@@ -138,7 +157,7 @@ public class StudentDataValidation {
         
         //Verify student number has at least 6 characters
         if(studentNumberEntered.length()< 6){
-            errorMessage += "Student number must be at least 6 characters";
+            errorMessage = errorMessage + "-Student number must be at least 6 characters\n";
             return false;//return false here as subsequent checks depend on at least 6 characters
         }
         
@@ -150,15 +169,15 @@ public class StudentDataValidation {
             year = Integer.parseInt(firstTwoCharacters);
             
         }catch(NumberFormatException ex){
-            errorMessage += "Student number must begin with 2 numbers, minimum 20. \n ";
+            errorMessage = errorMessage + "-Student number must begin with 2 numbers, minimum 20. \n";
             isValid = false;
-            validNumber = false;
+            validNumber = false;//Prevent duplicate error message
         }
         
         //Verify year is at least 2020
         if(year < 20){
-            if(validNumber == false)//Prevent duplicate error message
-                errorMessage += "Student number must begin with 2 numbers, minimum 20. \n ";
+            if(validNumber)
+                errorMessage = errorMessage + "-Student number must begin with 2 numbers, minimum 20. \n";
             isValid = false;
         }
         
@@ -166,7 +185,7 @@ public class StudentDataValidation {
         
         if(!Character.isAlphabetic(studentNumberEntered.charAt(2))
            ||!Character.isAlphabetic(studentNumberEntered.charAt(3))){
-            errorMessage += "The 3rd and 4th characters of student number must be letters.";
+            errorMessage = errorMessage + "-The 3rd and 4th characters of student number must be letters.\n";
             isValid = false;
         }
         
@@ -175,10 +194,10 @@ public class StudentDataValidation {
         
         //Verify 5th character is a letter OR a number
         if(!Character.isLetterOrDigit(studentNumberEntered.charAt(4))){
-            errorMessage += "The 5th character of student number must be a letter or number.";
+            errorMessage = errorMessage + "-The 5th character of student number must be a letter or number.\n";
             isValid = false;
         }else{
-            if(!Character.isAlphabetic(studentNumberEntered.charAt(4))){
+            if(Character.isAlphabetic(studentNumberEntered.charAt(4))){
                fifthIsChar = true; 
             }
         }
@@ -187,10 +206,10 @@ public class StudentDataValidation {
         String charctersAfterLastLetter;
         
         if(fifthIsChar){
-             charctersAfterLastLetter = studentNumberEntered.substring(6);
+             charctersAfterLastLetter = studentNumberEntered.substring(5);
              
         }else{
-             charctersAfterLastLetter = studentNumberEntered.substring(5);
+             charctersAfterLastLetter = studentNumberEntered.substring(4);
         }
         
         int finalDigits = 0;
@@ -199,14 +218,14 @@ public class StudentDataValidation {
             finalDigits = Integer.parseInt(charctersAfterLastLetter);
             
         }catch(NumberFormatException ex){
-            errorMessage += "Student number must end with 1-3 numbers(Maximum 200). \n ";
+            errorMessage = errorMessage + "-Student number contain 3-5 letters after the first 2 numbers). \n";
             isValid = false;
             validFinalDigits = false;
         }
         
         if(validFinalDigits){//Prevent duplicate error msg
             if(!(finalDigits > 0 && finalDigits < 201)){
-                errorMessage += "Student number must end with 1-3 numbers(Maximum 200). \n ";
+                errorMessage = errorMessage + "-Student number must end with 1-3 numbers(Maximum 200). \n";
                 isValid = false;
             }
         }
@@ -215,8 +234,7 @@ public class StudentDataValidation {
         if(isValid){
             studentNumber = studentNumberEntered;
             return true;
-        }else{//error found, print error message
-            System.out.println(errorMessage);
+        }else{//Errors found
             return false;
         }
     }

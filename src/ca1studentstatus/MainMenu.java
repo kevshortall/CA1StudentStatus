@@ -12,77 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- When in operation, the program will be given a file named “students.txt” – this contains the details of (fictitious) students in the following format: 
-
-Line 1 – <First Name> <Second Name>
-Line 2 – <Number of classes>
-Line 3 – <Student number>
-
-Your task is to: 
-Read the data from the file and check that it is valid. The file may contain more than one student, so an appropriate loop should be used. The data must obey the following rules: 
-the first name must be letters only; 
-The second name can be letters and/or numbers and must be separated from the first name by a single space; 
-the number of classes must be an integer value between 1 and 8 (inclusive), and 
-the student “number” must be a minimum of 6 characters with the first 2 characters being numbers, the 3rd  and 4th characters (and possibly 5th ) being a letter, and everything after the last letter character being a number.
-
-If the data is not valid, you should output a useful error message on screen to the user.
-
-If the data is valid, then you have to output the data to a file named status.txt, in the following format:
-
-<Student number> - <Second Name>
-<Workload>
-
-Where the <Workload> is determined by the number of classes, as follows:
 
 
-Number of classes
-Workload
-1
-Very Light
-2
-Light
-3, 4, or 5
-Part Time
-6 or higher
-Full Time
-
-
-
-
-Examples:
-
-Input:
-Sam Weiss
-5
-22DIP1123
-
-
-Would output as:
-22DIP1123 – Weiss
-Part Time
-
-and
-
-Steve Rodgers
-7
-20MSC1914
-
-Would output as:
-20MSC1914 – Rodgers
-Full Time
-* 
-* 
-* DISTINCTION WORK 
-
-To gain a distinction (70% or higher) you must complete tasks 1) – 3) properly AND ALSO: 
-Ensure that the student number year is at least 2020 (i.e. that the number starts with 20 or higher) 
-Ensure that the number after the letter(s) is reasonable – i.e. that it is between 1 and 200
-The program has a menu that lets the user decide between standard operation or adding (validated) data to the status.txt file via the console. (Invalid data should NOT be saved).
-
-
- * @author Kev
+ /* @author Kev
  */
+
+//GitHub Link https://github.com/kevshortall/CA1StudentStatus
+
 public class MainMenu {
 
     /**
@@ -102,7 +38,7 @@ public class MainMenu {
     }
     
     private static void displayMenu(){
-        System.out.println("\nSelect an option:");
+        System.out.println("\nSelect an option (Type a number from 1 to 3 and press Enter)");
         System.out.println("1. Read and validate data from students.txt file");
         System.out.println("2. Manually enter student data");
         System.out.println("3. Exit");
@@ -120,7 +56,8 @@ public class MainMenu {
            try{
                //Parse value selected to int
                optionSelected = Integer.parseInt(in.next());
-               
+              
+               //Valid option
                if(optionSelected > 0 && optionSelected < 4)
                    return optionSelected;
                else{
