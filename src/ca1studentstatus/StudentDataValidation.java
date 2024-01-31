@@ -210,31 +210,34 @@ public class StudentDataValidation {
                fifthIsChar = true; 
             }
         }
+      
         
         //Verify last 3 characters are numbers in the range 001-200
         String charctersAfterLastLetter;
         
         if(fifthIsChar){
              charctersAfterLastLetter = studentNumberEntered.substring(5);
-             
+            
         }else{
              charctersAfterLastLetter = studentNumberEntered.substring(4);
+               
         }
-        
+       
         int finalDigits = 0;
         boolean validFinalDigits = true;
         try{
             finalDigits = Integer.parseInt(charctersAfterLastLetter);
+            System.out.println(finalDigits);
             
         }catch(NumberFormatException ex){
-            errorMessage = errorMessage + "-Student number contain 3-5 letters after the first 2 numbers). \n";
+            errorMessage = errorMessage + charctersAfterLastLetter+"-Student number must contain 3-5 letters after the first 2 numbers). \n";
             isValid = false;
             validFinalDigits = false;
         }
         
         if(validFinalDigits){//Prevent duplicate error msg
             if(!(finalDigits > 0 && finalDigits < 201)){
-                errorMessage = errorMessage + "-Student number must end with 1-3 numbers(Maximum 200). \n";
+                errorMessage = errorMessage + "-Student number must end a number between 1 and 200. \n";
                 isValid = false;
             }
         }
