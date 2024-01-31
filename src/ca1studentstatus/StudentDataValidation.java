@@ -79,24 +79,17 @@ public class StudentDataValidation {
       /*First name must be letters only; 
         The second name can be letters and/or numbers 
         and must be separated from the first name by a single space */
-        
+      
+      
+       /* *******Following instructions exactly, names such as O'Connor would be invalid!!
+                (apostrophe is not a letter). Allowing apostrophes and also spaces
+                in surname to allow for names such as Da Silva.
+     
+      */
+         
         //Assume data is valid until an error is found
         boolean isValid = true;
         
-         //Verify exactly one space
-        int countSpaces = 0;
-          for(char c: fullNameEntered.toCharArray()){
-                if(Character.isWhitespace(c)){
-                     countSpaces ++;
-                }
-          }
-        
-        //Check for all possible whitespace errors
-        if(countSpaces != 1 || fullNameEntered.startsWith(" ") || fullNameEntered.endsWith(" ")) {
-            errorMessage = errorMessage + "-Exactly one space allowed, between first name and surname.\n";
-            return false;
-        }
-       
         //Get the first name and check it is only letters
         for(char c: fullNameEntered.toCharArray()){
             if(!Character.isWhitespace(c)){
@@ -112,14 +105,30 @@ public class StudentDataValidation {
                 break;
             }
         }
+        
+        //Check that there is exactly a single space between first and second names
+        
+        //No space at all
+        if(firstName.length() == fullNameEntered.length()){
+             errorMessage = errorMessage + "-Must be a space between first name and surname.\n";
+             return false;
+        }
+        
+        //More than one space between names
+        char firstLetterOfSurname = fullNameEntered.charAt(firstName.length() + 1);
+        
+        if(Character.isWhitespace(firstLetterOfSurname) ){
+             errorMessage = errorMessage + "-Must be only a single space between first name and surname.\n";
+             isValid = false;
+        }
+          
+        //Get the surname 
+        surname = fullNameEntered.substring(firstName.length() +1);
        
-        //Get the surname (trim whitespace as this has been dealt with previously)
-        surname = fullNameEntered.substring(firstName.length() +1).trim();
-       
-        //Verify surname contains only letters and numbers
+        //Verify surname contains only letters, numbers, apostrophes - allow spaces but not at start(already caught)
         for(char c: surname.toCharArray()){
-           if(!Character.isLetterOrDigit(c)){
-               errorMessage = errorMessage + "-Surname can only contain letters and numbers(Aa-Zz,0-9).\n";
+           if(!Character.isLetterOrDigit(c) && c != '\'' && c != ' '){
+               errorMessage = errorMessage + "-Surname can only contain letters, numbers and apostrophes.\n";
                isValid = false;
            }
         }
