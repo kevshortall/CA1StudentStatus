@@ -4,6 +4,7 @@
  */
 package ca1studentstatus;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -88,41 +89,42 @@ public class MainMenu {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        displayMenu();
-        int option = getUserSelection();
-        performSelectedAction(option);
+        //Display menu in console, option to exit is there to prevent infinite loop
+        do{
+            displayMenu();
+        }while(true);
         
     }
     
-        private static void displayInvalidOptionMessage(){
-        System.out.println("Invalid input. Please enter a number from 1-4");
+    private static void displayInvalidOptionMessage(){
+        System.out.println("Invalid input. Please enter a number from 1-3");
         displayMenu();
     }
     
     private static void displayMenu(){
-        System.out.println("Select an option");
+        System.out.println("\nSelect an option:");
         System.out.println("1. Read and validate data from students.txt file");
         System.out.println("2. Manually enter student data");
-        System.out.println("3. Display validated student status list");
-        System.out.println("4. Exit");
+        System.out.println("3. Exit");
+        int option = getUserSelection();
+        performSelectedAction(option);
     }
     
     private static int getUserSelection(){
-        int optionSelected = 0;
-        
+        //Scanner to read from console
         Scanner in = new Scanner(System.in);
         
-        
         //Loop until a valid menu option entered
+        int optionSelected = 0;
         do{
            try{
-               //parse value selected to int
+               //Parse value selected to int
                optionSelected = Integer.parseInt(in.next());
                
-               if(optionSelected > 0 && optionSelected < 5)
+               if(optionSelected > 0 && optionSelected < 4)
                    return optionSelected;
                else{
-                displayInvalidOptionMessage();
+                   displayInvalidOptionMessage();
                }
                    
                
@@ -137,30 +139,84 @@ public class MainMenu {
     }
     
     private static void performSelectedAction(int option){
+        //1.Read and validate data from students.txt file
          if(option == 1){
-            ArrayList<Student> students = getValidStudentsFromFile();
-            writeToStudentStatusFile((students));
-            for(Student s: students){
-                s.printStudentStatus();
-            }
-        }
-        
+            readAndValidateStudentsfromFile();
+           
+         }
+         
+        //Manually enter student data
         if(option == 2){
-            
+            manuallyEnterStudent();
         }
-        
+ 
+        //Option 3 exit program
         if(option == 3){
-            
-        }
-        
-        //Option 4 exit program
-        if(option == 4){
             System.exit(0);
         }
     }
     
+    private static void readAndValidateStudentsfromFile(){
+            //Read from file and add valid students to array list
+            ArrayList<Student> students = getValidStudentsFromFile();
+            
+            //Write valid student data to file
+            writeToStudentStatusFile((students));
+            
+            //Print validated student list
+            System.out.println("List of validated students:\n");
+            for(Student s: students){
+                s.printStudentStatus();
+            }
+    }
+    
+    private static void manuallyEnterStudent(){
+        Scanner in = new Scanner(System.in);
+        
+        String line1;
+        String line2;
+        String line3;
+        
+        System.out.println("Please enter name of student");
+        line1 = in.nextLine();
+        
+        System.out.println("Please enter number of classes taken");
+        line2 = in.nextLine();
+        
+        System.out.println("Please enter student number");
+        line3 = in.nextLine();
+        
+        addUnvalidatedStudentToFile(new String[]{line1,line2,line3});
+        
+        readAndValidateStudentsfromFile();
+        
+    }
+    
+    private static void addUnvalidatedStudentToFile(String[]lines){
+        File studentsFile = new File("students.txt");
+        FileWriter studentsFileWriter = null;
+        
+        try{
+            studentsFileWriter = new FileWriter(studentsFile, true);
+            for(String s: lines){
+                studentsFileWriter.append(s);
+                studentsFileWriter.append("\n");
+            }
+           
+        }catch(IOException ex){
+            System.out.println(ex.toString());
+        }
+        try {
+            studentsFileWriter.flush();
+            studentsFileWriter.close();
+		
+	} catch (IOException ex) {
+             System.out.println(ex.toString());
+	}
+    }
+    
     private static ArrayList<Student> getValidStudentsFromFile(){
-        //Array list of arrays of student data read from file
+        //Array list of arrays(3 lines) of student data read from file
         ArrayList<String[]>unValidatedStudentDetails = new ArrayList<>();
         
         //Array list to store validated students
@@ -179,6 +235,7 @@ public class MainMenu {
                         
                         String line = reader.readLine();
 			while (line != null) {
+                                //Add each line to data array list
                                 data.add(line);
 				line = reader.readLine();
 			}
@@ -189,11 +246,12 @@ public class MainMenu {
                     System.out.println(e.toString());
 		}
                 
-                //
+                //Loop through data to get arrays of 3 student data points and add to array list to be validated
                 int index = 1;
                 String line1= "";
                 String line2 = "";
                 String line3 = "";
+                
                 for(String s: data){
                     
                     if(index == 1)
@@ -205,19 +263,18 @@ public class MainMenu {
                         String[] nextStudent = new String[]{line1,line2,line3};
                         unValidatedStudentDetails.add(nextStudent);
                     }
-                   
+                   //reset index every 3rd pass
                      if(index == 3)
                          index = 0;
+                     //increment index
                      index ++;
                 }
                 
-                //Loop through each array of student details
-                for(String[] studentdetails : unValidatedStudentDetails){
-                    System.out.println(studentdetails[0]);
-                    System.out.println(studentdetails[1]);
-                    System.out.println(studentdetails[2]);
+                //Loop through each array of unvalidated student details
+                for(String[] studentDetails : unValidatedStudentDetails){
+                   
                     //Create student validation object for each array
-                    StudentDataValidation studentData = new StudentDataValidation(studentdetails);
+                    StudentDataValidation studentData = new StudentDataValidation(studentDetails);
                     
                     //Add validated students to arraylist
                     if(studentData.dataIsValid()){
@@ -231,24 +288,26 @@ public class MainMenu {
     }
     
     private static void writeToStudentStatusFile(ArrayList<Student> students){
-        File statusFile = new File("status.txt");
-        FileWriter statusFileWriter = null;
-        
+       
+        BufferedWriter statusFileWriter = null;
         try{
-            statusFileWriter = new FileWriter(statusFile);
-            System.out.println(statusFile.getAbsolutePath());
+            statusFileWriter = new BufferedWriter(new FileWriter("status.txt", false));
+           
             for(Student student : students){
                 statusFileWriter.append(student.getStudentStatus());
             }
-            System.out.println(students.size());
+           
         }catch(IOException ex){
             System.out.println(ex.toString());
         }
+        try {
+            statusFileWriter.flush();
+            statusFileWriter.close();
+		
+	} catch (IOException ex) {
+             System.out.println(ex.toString());
+	}
 		
     }
-    
-   
-    
-
     
 }

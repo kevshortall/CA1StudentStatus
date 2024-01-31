@@ -33,14 +33,16 @@ public class StudentDataValidation {
         //Initialise attributes
         firstName = "";
         surname = "";
-        studentNumber = "Test";
+        studentNumber = "";
         numberClasses = 0;
+        
+        String fullName = line1;
+        errorMessage = "Invalid Data for student: " + fullName + " \n";
         
     }
     
-    
-    //Create a new student
     public Student createStudent(){
+        //Create a new student
         Student student = new Student(firstName,surname,studentNumber,numberClasses);
         
         return student;
@@ -75,10 +77,9 @@ public class StudentDataValidation {
         
         if(countSpaces != 1){
             errorMessage += "Exactly one space required between first name and surname.\n";
-            isValid = false;
+            return false;
         }
        
-        
         //Get the first name and check it is only letters
         for(char c: fullNameEntered.toCharArray()){
             if(!Character.isWhitespace(c)){
@@ -138,7 +139,7 @@ public class StudentDataValidation {
         //Verify student number has at least 6 characters
         if(studentNumberEntered.length()< 6){
             errorMessage += "Student number must be at least 6 characters";
-            return false;
+            return false;//return false here as subsequent checks depend on at least 6 characters
         }
         
         //Verify 2 numbers at start
@@ -169,6 +170,7 @@ public class StudentDataValidation {
             isValid = false;
         }
         
+        //Need to check if it is a letter or number to correctly check digits at end
         boolean fifthIsChar = false;
         
         //Verify 5th character is a letter OR a number
@@ -177,13 +179,12 @@ public class StudentDataValidation {
             isValid = false;
         }else{
             if(!Character.isAlphabetic(studentNumberEntered.charAt(4))){
-               fifthIsChar = true; //check if it is a letter or number to correctly count digits at end
+               fifthIsChar = true; 
             }
         }
         
-        
         //Verify last 3 characters are numbers in the range 001-200
-        String charctersAfterLastLetter = "";
+        String charctersAfterLastLetter;
         
         if(fifthIsChar){
              charctersAfterLastLetter = studentNumberEntered.substring(6);

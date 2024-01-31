@@ -86,7 +86,7 @@ public class Student {
     public String getStudentStatus(){
        
         //Format required for outputting to status.txt file
-        String status = studentNumber + " - " +  surname + "\n" + workload + "\n\n";
+        String status = studentNumber + " - " +  surname + "\n" + workload + "\n";
         
         return status;
         
@@ -97,5 +97,6 @@ public class Student {
         //<Workload>
         System.out.println(studentNumber + " - " + surname);
         System.out.println(workload);
+        System.out.println("\n");
     }
 }
