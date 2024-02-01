@@ -199,7 +199,7 @@ public class StudentDataValidation {
         }
         
         //Need to check if it is a letter or number to correctly check digits at end
-        boolean fifthIsChar = false;
+        boolean fifthIsLetter = false;
         
         //Verify 5th character is a letter OR a number
         if(!Character.isLetterOrDigit(studentNumberEntered.charAt(4))){
@@ -207,7 +207,7 @@ public class StudentDataValidation {
             isValid = false;
         }else{
             if(Character.isAlphabetic(studentNumberEntered.charAt(4))){
-               fifthIsChar = true; 
+               fifthIsLetter = true; 
             }
         }
       
@@ -215,7 +215,8 @@ public class StudentDataValidation {
         //Verify last 3 characters are numbers in the range 001-200
         String charctersAfterLastLetter;
         
-        if(fifthIsChar){
+        //Check if 2 or 3 letters
+        if(fifthIsLetter){
              charctersAfterLastLetter = studentNumberEntered.substring(5);
             
         }else{
@@ -227,17 +228,16 @@ public class StudentDataValidation {
         boolean validFinalDigits = true;
         try{
             finalDigits = Integer.parseInt(charctersAfterLastLetter);
-            System.out.println(finalDigits);
-            
-        }catch(NumberFormatException ex){
-            errorMessage = errorMessage + charctersAfterLastLetter+"-Student number must contain 3-5 letters after the first 2 numbers). \n";
+           
+        }catch(NumberFormatException ex){//Parse will fail if more than 3 letters
+            errorMessage = errorMessage + "-Student number must contain 3-5 letters after the first 2 numbers). \n";
             isValid = false;
             validFinalDigits = false;
         }
         
-        if(validFinalDigits){//Prevent duplicate error msg
+        if(validFinalDigits){//Ends with digits, check between 1 and 200(leading zeroes allowed)
             if(!(finalDigits > 0 && finalDigits < 201)){
-                errorMessage = errorMessage + "-Student number must end a number between 1 and 200. \n";
+                errorMessage = errorMessage + "-Student number must end with a number between 1 and 200. \n";
                 isValid = false;
             }
         }
