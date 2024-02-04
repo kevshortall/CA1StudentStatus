@@ -44,6 +44,7 @@ public class MainMenu {
         System.out.println("3. Exit");
         int option = getUserSelection();
         performSelectedAction(option);
+        
     }
     
     private static int getUserSelection(){
